@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_USER: mahnkemj
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  express:
+    build: ./express
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: mahnkemj
+      DB_PASSWORD_FILE: /run/secrets/mysql_user_password
+      DB_DATABASE: ${MYSQL_DATABASE}
+    secrets:
+      - mysql_user_password
+  
+  checkin:
+    build: ./checkin
+    ports:
+      - "3001:3000"
+
+  po-from-excel:
+    build: ./po-from-excel
+    ports:
+      - "3002:3000"
+
+volumes:
+  db_data:
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password
+  mysql_user_password:
+    file: ./secrets/mysql_user_password

@@ -1,0 +1,140 @@
+/* App.css */
+
+/* General styles */
+body {
+  font-family: 'Segoe UI', 'Calibri', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.App {
+  background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* FileUploader styles */
+.dropzone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-width: 2px;
+  border-radius: 2px;
+  border-color: #0094fc;
+  border-style: dashed;
+  background-color: #fafafa;
+  color: #bdbdbd;
+  outline: none;
+  transition: border .24s ease-in-out;
+  cursor: pointer;
+}
+
+.dropzone:focus {
+  border-color: #0094fc;
+}
+
+/* ColumnSelector styles */
+.column-selector {
+  margin: 20px 0;
+}
+
+.column-selector label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.select__control {
+  border-color: #0094fc;
+}
+
+.select__option--is-focused {
+  background-color: #e3f2fd;
+}
+
+.select__option--is-selected {
+  background-color: #0094fc;
+  color: white;
+}
+
+/* Excel-like Table Preview */
+.data-preview {
+  margin-top: 20px;
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  background-color: #fcfcfc;
+}
+
+.data-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  color: #333;
+}
+
+.data-preview th,
+.data-preview td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  max-width: 150px; /* Set a max-width for each cell */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-preview th {
+  background-color: #e7e7e7;
+  font-weight: bold;
+}
+
+/* Adjustments for alternating row colors similar to Excel */
+.data-preview tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Button styles */
+button {
+  background-color: #0094fc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0077cc;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: default;
+}
+
+
+/* Styles for the droppable area */
+.droppable-area {
+  display: flex;
+  padding: 8px;
+  margin-top: 16px;
+  background-color: #f0f0f0;
+  overflow-x: auto;
+}
+
+/* Styles for each draggable column */
+.draggable-column {
+  user-select: none;
+  padding: 8px;
+  margin: 0 8px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}

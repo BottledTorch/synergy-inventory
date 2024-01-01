@@ -1,0 +1,32 @@
+.vendorSelector {
+    margin: 10px 0;
+    position: relative;
+}
+
+.vendorSelector input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.suggestionsContainer {
+    margin-top: 5px;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+}
+
+.suggestion:hover {
+    background-color: #f0f0f0;
+}

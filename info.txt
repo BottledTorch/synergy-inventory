@@ -1,0 +1,3 @@
+create secret files:
+openssl rand -base64 32 > secrets/mysql_root_password
+openssl rand -base64 32 > secrets/mysql_user_password
