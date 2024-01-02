@@ -28,8 +28,8 @@ router.get('/:id', (req, res) => {
 
 // Create a new item
 router.post('/', (req, res) => {
-    const { name, description, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress } = req.body;
-    pool.query('INSERT INTO items (upc, name, description, notes, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [upc, name, description, notes, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress], (error, results) => {
+    const { upc, name, description, notes, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress } = req.body;
+    pool.query('INSERT INTO items (upc, name, description, notes, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [upc, name, description, notes, purchase_price, sale_price, vendor_id, purchase_order_id, observed_condition, progress], (error, results) => {
         if (error) {
             return res.status(500).json({ error });
         }

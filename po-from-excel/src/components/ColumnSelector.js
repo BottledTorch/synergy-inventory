@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import axios from 'axios';
-const server_address = process.env.EXPRESS_SERVER_ADDRESS;
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
 
-const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange }) => {
+const ColumnSelector = ({ data, handleItemNameChange, handlePurchasePriceChange, handleUPCCodeChange, handleNotesChange, poNumber, onPONumberChange }) => {
   const [columns, setColumns] = useState([]);
   const [selectedItemName, setSelectedItemName] = useState([]);
   const [selectedPurchasePrice, setSelectedPurchasePrice] = useState(null);
@@ -24,31 +24,24 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
     }
   }, [data]);
 
-    // Handler for multi-select (Item Name and Notes)
-    const handleMultiSelectChange = (selectedOption, setState) => {
-      setState(selectedOption);
-      // Update onColumnsSelected logic as needed
-    };
-  
-    // Handler for single-select (Purchase Price and UPC Code)
-    const handleSingleSelectChange = (selectedOption, setState) => {
-      setState(selectedOption);
-      // Update onColumnsSelected logic as needed
-    };
-
-  const handleItemNameChange = (value) => {
+  const onItemNameChange = (value) => {
     setSelectedItemName(value);
-    onColumnsSelected(value.map(v => v.value));
+    handleItemNameChange(value.map(v => v.value));
   };
 
-  const handlePurchasePriceChange = (value) => {
+  const onPurchasePriceChange = (value) => {
     setSelectedPurchasePrice(value);
-    onColumnsSelected(value.map(v => v.value));
+    handlePurchasePriceChange(value.map(v => v.value));
   };
 
-  const handleUPCCodeChange = (value) => {
+  const onUPCCodeChange = (value) => {
     setSelectedUPCCode(value);
-    onColumnsSelected(value.map(v => v.value));
+    handleUPCCodeChange(value.map(v => v.value));
+  };
+
+  const onNotesChange = (value) => {
+    setSelectedNotes(value);
+    handleNotesChange(value.map(v => v.value));
   };
 
   const checkPONumberExists = async () => {
@@ -106,7 +99,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
           name="item-name-select"
           options={columns}
           value={selectedItemName}
-          onChange={(value) => handleMultiSelectChange(value, setSelectedItemName)}
+          onChange={(value) => onItemNameChange(value)}
           classNamePrefix="select"
         />
       </div>
@@ -118,7 +111,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
           name="purchase-price-select"
           options={columns}
           value={selectedPurchasePrice}
-          onChange={(value) => handleSingleSelectChange(value, setSelectedPurchasePrice)}
+          onChange={(value) => onPurchasePriceChange(value)}
           classNamePrefix="select"
         />
       </div>
@@ -130,7 +123,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
           name="upc-code-select"
           options={columns}
           value={selectedUPCCode}
-          onChange={(value) => handleSingleSelectChange(value, setSelectedUPCCode)}
+          onChange={(value) => onUPCCodeChange(value)}
           classNamePrefix="select"
         />
       </div>
@@ -143,7 +136,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
           name="notes-select"
           options={columns}
           value={selectedNotes}
-          onChange={(value) => handleMultiSelectChange(value, setSelectedNotes)}
+          onChange={(value) => onNotesChange(value)}
           classNamePrefix="select"
         />
       </div>

@@ -4,6 +4,12 @@ FROM node:14
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
+# Accept the build-time environment variable
+ARG REACT_APP_EXPRESS_SERVER_ADDRESS
+
+# Set the environment variable
+ENV REACT_APP_EXPRESS_SERVER_ADDRESS $REACT_APP_EXPRESS_SERVER_ADDRESS
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
@@ -21,9 +27,6 @@ RUN npm install -g serve
 
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
-
-# Set the environment variable
-ENV EXPRESS_SERVER_ADDRESS $EXPRESS_SERVER_ADDRESS
 
 # Serve the build
 CMD ["serve", "-s", "build", "-l", "3000"]

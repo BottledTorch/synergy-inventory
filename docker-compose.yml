@@ -38,18 +38,27 @@ services:
       - mysql_user_password
   
   checkin:
-    build: ./checkin
+    build: 
+      context: ./checkin
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
     ports:
       - "3001:3000"
     environment:
-      - EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
   po-from-excel:
-    build: ./po-from-excel
+    build:
+      context: ./po-from-excel
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
     ports:
       - "3002:3000"
     environment:
-      - EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+
 
 volumes:
   db_data:

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './VendorSelector.css'; // Import the CSS file
-const server_address = process.env.EXPRESS_SERVER_ADDRESS;
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
 
 const VendorSelector = ({ vendor, onVendorChange }) => {
     const [suggestions, setSuggestions] = useState([]);

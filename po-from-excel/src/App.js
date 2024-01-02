@@ -5,12 +5,16 @@ import ColumnSelector from './components/ColumnSelector';
 import VendorSelector from './components/VendorSelector';
 import './App.css';
 
-const server_address = process.env.EXPRESS_SERVER_ADDRESS;
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
 
 
 function App() {
 	const [fileData, setFileData] = useState(null);
-	const [selectedColumns, setSelectedColumns] = useState(null);
+	const [itemNameColumns, setItemNameColumns] = useState(null);
+    const [purchasePriceColumn, setPurchasePriceColumn] = useState(null);
+    const [upcColumn, setUPCColumn] = useState(null);
+    const [notesColumns, setNotesColumns] = useState(null);
+
 	const [poNumber, setPONumber] = useState(''); // New state for storing PO number
 	const [vendor, setVendor] = useState('')
 	const [orderDate, setOrderDate] = useState('');
@@ -19,8 +23,20 @@ function App() {
 		setFileData(data);
 	};
 
-	const handleColumnsSelected = (columns) => {
-		setSelectedColumns(columns);
+	const handleItemNameChange = (columns) => {
+		setItemNameColumns(columns);
+	};
+
+    const handlePurchasePriceChange = (columns) => {
+		setPurchasePriceColumn(columns);
+	};
+
+    const handleUPCCodeChange = (columns) => {
+		setUPCColumn(columns);
+	};
+
+    const handleNotesChange = (columns) => {
+		setNotesColumns(columns);
 	};
 
 	const handlePONumberChange = (newPONumber) => {
@@ -44,7 +60,11 @@ function App() {
 
   const handleSubmit = async () => {
       console.log('fileData:', fileData);
-      console.log('selectedColumns:', selectedColumns);
+      console.log('itemNameColumns:', itemNameColumns);
+      console.log('purchasePriceColumn:', purchasePriceColumn);
+      console.log('upcColumn:', upcColumn);
+      console.log('notesColumns:', notesColumns);
+      console.log()
       console.log('PO Number:', poNumber);
       console.log('Vendor Name:', vendor);
 
@@ -107,14 +127,27 @@ function App() {
         const successfulItems = [];
     
         for (const item of fileData) {
-            const itemName = selectedColumns.map(col => item[col]).join(' ');
-            console.log(itemName)
+            const itemName = itemNameColumns.map(col => item[col]).join(' ');
+            
             const itemPayload = {
                 name: itemName,
                 purchase_order_id: poNumber,
                 progress: 'not received'
                 // ... additional fields ...
             };
+            
+            if (purchasePriceColumn && item[purchasePriceColumn]) {
+                itemPayload.purchase_price = item[purchasePriceColumn];
+            }
+            
+            if (upcColumn && item[upcColumn]) {
+                itemPayload.upc = item[upcColumn];
+            }
+            
+            if (notesColumns && notesColumns.some(col => item[col])) {
+                itemPayload.notes = notesColumns.map(col => item[col]).filter(Boolean).join(' ');
+            }
+            
     
             try {
                 await axios.post(`http://${server_address}/items`, itemPayload);
@@ -180,7 +213,6 @@ function App() {
   return (
     <div className="App">
         <h1>PO Order Upload</h1>
-        {console.log(server_address)}
         <FileUploader onFileLoaded={handleFileLoaded} />
         {fileData && (
             <>
@@ -192,7 +224,10 @@ function App() {
                 />
                 <ColumnSelector 
                     data={fileData} 
-                    onColumnsSelected={handleColumnsSelected} 
+                    handleItemNameChange={handleItemNameChange} 
+                    handlePurchasePriceChange={handlePurchasePriceChange}
+                    handleUPCCodeChange={handleUPCCodeChange}
+                    handleNotesChange={handleNotesChange}
                     poNumber={poNumber}
                     onPONumberChange={handlePONumberChange}
                 />
