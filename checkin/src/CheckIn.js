@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PurchaseOrderInput from './components/PurchaseOrderInput';
 import ItemList from './components/ItemList';
 import AddButton from './components/AddButton';
-import SaveButton from './components/SaveButton';
 import handlePrintBarcode from './components/HandleBarcode';
 
 import './CheckIn.css';
 
-// const server_address = "localhost:3000";
-const server_address = process.env.EXPRESS_SERVER_ADDRESS;
-
+const server_address = process.env.EXPRESS_SERVER_ADDRESS || "localhost:3000";
 
 const CheckIn = () => {
     const [items, setItems] = useState([]);
-    const [isFocused, setIsFocused] = useState(false);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
-    const blurTimeoutRef = useRef(null);
     const [selectedPO, setSelectedPO] = useState(null);
     const [poInput, setPoInput] = useState('');
     const [poRecommendations, setPoRecommendations] = useState([]);
@@ -34,27 +29,31 @@ const CheckIn = () => {
 
     useEffect(() => {
         if (selectedPO) {
-            setItems([]);
             axios.get(`http://${server_address}/purchase_orders/${selectedPO}/items`)
                 .then(response => {
                     setItems(response.data);
                 })
                 .catch(error => {
-                    console.info("Error fetching items for selected PO:", selectedPO);
+                    console.error("Error fetching items for selected PO:", selectedPO);
                 });
         }
     }, [selectedPO]);
 
     useEffect(() => {
-        if (poInput) {
-            const filteredPOs = purchaseOrders.filter(po => 
-                po.id.toString().includes(poInput)
-            );
-            setPoRecommendations(filteredPOs);
-        } else {
-            setPoRecommendations(purchaseOrders);
-        }
-    }, [poInput, purchaseOrders]);
+        const intervalId = setInterval(() => {
+            if (selectedPO) {
+                axios.get(`http://${server_address}/purchase_orders/${selectedPO}/items`)
+                    .then(response => {
+                        setItems(response.data);
+                    })
+                    .catch(error => {
+                        console.error("Error fetching items for selected PO:", selectedPO);
+                    });
+            }
+        }, 2000);
+
+        return () => clearInterval(intervalId);
+    }, [selectedPO]);
 
     const handleItemChange = (itemId, attribute, newValue) => {
         setItems(prevItems => 
@@ -62,6 +61,18 @@ const CheckIn = () => {
                 item.id === itemId ? { ...item, [attribute]: newValue } : item
             )
         );
+
+        const updatedItem = items.find(item => item.id === itemId);
+        if (updatedItem) {
+            const url = `http://${server_address}/items/${itemId}`;
+            axios.put(url, { ...updatedItem, [attribute]: newValue })
+                .then(response => {
+                    console.log("Item updated:", response.data);
+                })
+                .catch(error => {
+                    console.error("Error updating item:", error);
+                });
+        }
     };
 
     const handleDelete = (itemId) => {
@@ -77,63 +88,29 @@ const CheckIn = () => {
         }
     };
 
-    const handleSave = () => {
-        items.forEach(item => {
-            // Determine if the item is new or existing
-            const method = item.id > 0 ? 'put' : 'post';
-            const url = item.id > 0 ? `http://${server_address}/items/${item.id}` : `http://${server_address}/items`;
-
-            axios[method](url, item)
-                .then(response => {
-                    console.log(response.data.message);
-                    if (method === 'post') {
-                        // Update the ID of the newly added item in the local state
-                        setItems(prevItems => 
-                            prevItems.map(prevItem => 
-                                prevItem.id === item.id ? { ...prevItem, id: response.data.id } : prevItem
-                            )
-                        );
-                    }
-                })
-                .catch(error => {
-                    console.error("Error processing item:", error);
-                });
-        });
-    };
-    
-
     const handleAdd = async () => {
-        let newItem = null;
         const itemPayload = {
             name: '',
             description: '',
             progress: 'received',
-            purchase_order_id: selectedPO, // Set the PO ID for the new item
+            purchase_order_id: selectedPO,
             observed_condition: '',
             // ... additional fields ...
         };
-    
+
         try {
             const response = await axios.post(`http://${server_address}/items`, itemPayload);
             const newItemID = response.data.itemId;
-    
-            // Update the items state only after receiving the response
+
             setItems(prevItems => [
                 ...prevItems,
                 {
-                    id: newItemID, 
-                    name: '',
-                    description: '',
-                    purchase_price: '',
-                    progress: 'received',
-                    purchase_order_id: selectedPO, // Set the PO ID for the new item
-                    observed_condition: '',
-                    // ... other attributes with default values
+                    id: newItemID,
+                    ...itemPayload
                 }
             ]);
         } catch (error) {
             console.error('Error adding item:', error);
-            // Optionally handle the error, e.g., display a message to the user
         }
     };
 
@@ -144,9 +121,6 @@ const CheckIn = () => {
                 setPoInput={setPoInput}
                 poRecommendations={poRecommendations}
                 setSelectedPO={setSelectedPO}
-                isFocused={isFocused}
-                setIsFocused={setIsFocused}
-                blurTimeoutRef={blurTimeoutRef}
             />
             {selectedPO && items.length > 0 && (
                 <ItemList 
@@ -156,7 +130,6 @@ const CheckIn = () => {
                     handleDelete={handleDelete}
                 />
             )}
-            <SaveButton handleSave={handleSave} />
             <AddButton handleAdd={handleAdd} />
         </div>
     );

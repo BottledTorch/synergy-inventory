@@ -1,4 +1,4 @@
-import JsBarcode from 'jsbarcode'
+import JsBarcode from 'jsbarcode';
 
 const handlePrintBarcode = (itemId) => {
     // Create a new window
@@ -16,27 +16,36 @@ const handlePrintBarcode = (itemId) => {
                 <title>Print Barcode</title>
                 <style>
                 @media print {
-                    /* Hide everything in the body when printing... */
-                    body * {
-                        visibility: hidden;
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        text-align: center;
                     }
-                    /* ...except the barcode image */
-                    img {
-                        visibility: visible;
-                        position: absolute;
-                        left: 0;
-                        top: 0;
+                    .barcode-container {
+                        display: inline-block;
+                        padding: 20px;
+                        border: 1px solid #000;
+                        text-align: left;
                     }
-                    /* Remove default margins set by the browser */
+                    .barcode-image {
+                        display: block;
+                        margin-bottom: 10px;
+                    }
+                    .barcode-text {
+                        font-size: 12px;
+                        font-family: Arial, sans-serif;
+                    }
                     @page {
                         margin: 0;
                         size: auto;
                     }
                 }
-            </style>
+                </style>
             </head>
             <body>
-                <img src="${barcodeDataUrl}" />
+                <div class="barcode-container">
+                    <img class="barcode-image" src="${barcodeDataUrl}" />
+                </div>
                 <script>
                     window.onload = function() {
                         window.print();
@@ -53,4 +62,4 @@ const handlePrintBarcode = (itemId) => {
     printWindow.document.close();
 };
 
-export default handlePrintBarcode
+export default handlePrintBarcode;
