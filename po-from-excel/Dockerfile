@@ -22,5 +22,8 @@ RUN npm install -g serve
 # Make port 3000 available to the world outside this container
 EXPOSE 3000
 
+# Set the environment variable
+ENV EXPRESS_SERVER_ADDRESS $EXPRESS_SERVER_ADDRESS
+
 # Serve the build
 CMD ["serve", "-s", "build", "-l", "3000"]

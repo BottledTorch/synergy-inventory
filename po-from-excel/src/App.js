@@ -5,6 +5,9 @@ import ColumnSelector from './components/ColumnSelector';
 import VendorSelector from './components/VendorSelector';
 import './App.css';
 
+const server_address = process.env.EXPRESS_SERVER_ADDRESS;
+
+
 function App() {
 	const [fileData, setFileData] = useState(null);
 	const [selectedColumns, setSelectedColumns] = useState(null);
@@ -79,11 +82,11 @@ function App() {
 
       async function checkOrCreateVendor(vendorName) {
           try {
-              const response = await axios.get(`http://localhost:3000/vendors/name/${vendorName}`);
+              const response = await axios.get(`http://${server_address}/vendors/name/${vendorName}`);
               return response.data.id;
           } catch (error) {
               if (error.response && error.response.status === 404) {
-                  const vendorResponse = await axios.post('http://localhost:3000/vendors', { name: vendorName });
+                  const vendorResponse = await axios.post(`http://${server_address}/vendors`, { name: vendorName });
                   return vendorResponse.data.vendorId;
               } else {
                   throw new Error('Vendor check/create failed');
@@ -92,7 +95,7 @@ function App() {
       }
 
       async function createPurchaseOrder(vendor_id) {
-          const poResponse = await axios.post('http://localhost:3000/purchase_orders/with-id', {
+          const poResponse = await axios.post(`http://${server_address}/purchase_orders/with-id`, {
               id: poNumber,
               vendor_id: vendor_id,
               order_date: formattedOrderDate
@@ -114,7 +117,7 @@ function App() {
             };
     
             try {
-                await axios.post('http://localhost:3000/items', itemPayload);
+                await axios.post(`http://${server_address}/items`, itemPayload);
                 console.log("added: " + itemName);
                 successfulItems.push(itemName);
             } catch (error) {
@@ -174,30 +177,10 @@ function App() {
   };
 
 
-
-	// This is a placeholder function and needs to be implemented according to your specific backend format.
-	function convertToBackendFormat(fileData, selectedColumns) {
-		// Check if fileData and selectedColumns are defined
-		if (!fileData || !selectedColumns) {
-			console.error('Invalid file data or selected columns');
-			return [];
-		}
-
-		// Assuming fileData is an array of objects and selectedColumns is an object
-		// with keys as the database fields and values as the selected column labels.
-		return fileData.map(row => {
-			let newRow = {};
-			for (const [key, value] of Object.entries(selectedColumns)) {
-				newRow[key] = row[value.value];
-			}
-			return newRow;
-		});
-	}
-
-
   return (
     <div className="App">
         <h1>PO Order Upload</h1>
+        {console.log(server_address)}
         <FileUploader onFileLoaded={handleFileLoaded} />
         {fileData && (
             <>

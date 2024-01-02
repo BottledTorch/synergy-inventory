@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './VendorSelector.css'; // Import the CSS file
+const server_address = process.env.EXPRESS_SERVER_ADDRESS;
 
 const VendorSelector = ({ vendor, onVendorChange }) => {
     const [suggestions, setSuggestions] = useState([]);
@@ -9,7 +10,7 @@ const VendorSelector = ({ vendor, onVendorChange }) => {
 
     useEffect(() => {
         if (vendor) {
-            axios.get(`http://localhost:3000/vendors`)
+            axios.get(`http://${server_address}/vendors`)
                 .then(response => {
                     const filteredSuggestions = response.data.filter(v => 
                         v.name.toLowerCase().startsWith(vendor.toLowerCase()));

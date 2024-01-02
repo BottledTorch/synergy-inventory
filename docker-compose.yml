@@ -41,11 +41,15 @@ services:
     build: ./checkin
     ports:
       - "3001:3000"
+    environment:
+      - EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
   po-from-excel:
     build: ./po-from-excel
     ports:
       - "3002:3000"
+    environment:
+      - EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
 volumes:
   db_data:

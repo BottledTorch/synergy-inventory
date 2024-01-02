@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CreatableSelect from 'react-select/creatable';
 import axios from 'axios';
+const server_address = process.env.EXPRESS_SERVER_ADDRESS;
 
 const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange }) => {
   const [columns, setColumns] = useState([]);
@@ -53,7 +54,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
   const checkPONumberExists = async () => {
     setPOLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/purchase_orders/${poNumber}`);
+      const response = await axios.get(`http://${server_address}/purchase_orders/${poNumber}`);
       if (response.data.id == poNumber) {
         setPOError('This PO number is already present in the database.');
       } else {
@@ -88,7 +89,7 @@ const ColumnSelector = ({ data, onColumnsSelected, poNumber, onPONumberChange })
             type="text"
             id="po-number"
             value={poNumber}
-            onChange={onPONumberChange}
+            onChange={handlePONumberChange}
             onBlur={handlePONumberBlur} // Trigger check when input loses focus
             placeholder="Enter PO number"
             disabled={isPOLoading}

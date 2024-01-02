@@ -8,7 +8,9 @@ import handlePrintBarcode from './components/HandleBarcode';
 
 import './CheckIn.css';
 
-const server_address = "localhost:3000";
+// const server_address = "localhost:3000";
+const server_address = process.env.EXPRESS_SERVER_ADDRESS;
+
 
 const CheckIn = () => {
     const [items, setItems] = useState([]);
@@ -112,7 +114,7 @@ const CheckIn = () => {
         };
     
         try {
-            const response = await axios.post('http://localhost:3000/items', itemPayload);
+            const response = await axios.post(`http://${server_address}/items`, itemPayload);
             const newItemID = response.data.itemId;
     
             // Update the items state only after receiving the response

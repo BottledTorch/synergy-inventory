@@ -16,5 +16,8 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 3000
 
+# Set the environment variable
+ENV EXPRESS_SERVER_ADDRESS $EXPRESS_SERVER_ADDRESS
+
 # Command to run the app
 CMD [ "node", "src/server.js" ]
