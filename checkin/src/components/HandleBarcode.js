@@ -6,7 +6,14 @@ const handlePrintBarcode = (itemId) => {
 
     // Create a canvas element
     const canvas = document.createElement('canvas');
-    JsBarcode(canvas, 'ITM-' + itemId.toString(), { format: 'CODE128' });
+    JsBarcode(canvas, 'ITM-' + itemId.toString(), {
+        format: 'CODE128',
+        width: 2, // Width of a single bar
+        height: 50, // Height of the barcode
+        displayValue: true, // Display the text value below the barcode
+        textMargin: 2, // Margin between the barcode and the text
+        fontSize: 14 // Size of the text
+    });
     const barcodeDataUrl = canvas.toDataURL('image/png');
 
     // Generate the HTML content for the new window
@@ -22,22 +29,20 @@ const handlePrintBarcode = (itemId) => {
                         text-align: center;
                     }
                     .barcode-container {
-                        display: inline-block;
-                        padding: 20px;
-                        border: 1px solid #000;
-                        text-align: left;
+                        width: 3.5in; // Width of 30252 label
+                        height: 1.125in; // Height of 30252 label
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        page-break-after: always; // Ensure each barcode is printed on a separate label
                     }
                     .barcode-image {
-                        display: block;
-                        margin-bottom: 10px;
-                    }
-                    .barcode-text {
-                        font-size: 12px;
-                        font-family: Arial, sans-serif;
+                        max-width: 100%;
+                        max-height: 100%;
                     }
                     @page {
                         margin: 0;
-                        size: auto;
+                        size: 3.5in 1.125in; // Set page size to match label size
                     }
                 }
                 </style>

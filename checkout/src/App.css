@@ -1,0 +1,150 @@
+/* Reset some basic elements */
+body, h1, h2, h3, p, form, input, button {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Basic styling */
+body {
+  background-color: #f4f4f4;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Container for centering the layout */
+.container {
+  width: 80%;
+  margin: auto;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  background: #333;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* Input and button styling */
+input[type="text"], input[type="number"] {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  width: calc(100% - 22px); /* Adjust width for padding and border */
+}
+
+button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #555;
+}
+
+select, input[type="text"] {
+  margin: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-container, .checkout-container, .sale-info-container {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sale-info-container p, .sale-info-container select, .sale-info-container input, .sale-info-container button {
+  margin: 5px;
+}
+
+/* Other styles... */
+
+
+/* Message styling */
+.message {
+  background: #e7f3fe;
+  color: #333;
+  padding: 10px;
+  margin: 20px 0;
+  border: 1px solid #bce8f1;
+  border-radius: 5px;
+}
+
+/* Sale price container */
+.sale-price-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.sale-price-container input, .sale-price-container button {
+  margin: 0 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+      width: 95%;
+  }
+
+  input[type="text"], input[type="number"] {
+      width: calc(100% - 22px); /* Adjust width for padding and border */
+  }
+}
+
+/* Center the table */
+.table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Excel-like table styling */
+table {
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  width: 80%; /* Adjust based on your preference */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+  border: 1px solid #d4d4d4;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+table tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Add zebra-striping for rows */
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}

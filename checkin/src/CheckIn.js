@@ -12,6 +12,7 @@ const server_address = process.env.EXPRESS_SERVER_ADDRESS || "localhost:3000";
 const CheckIn = () => {
     const [items, setItems] = useState([]);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
+    const [selectedItemIds, setSelectedItemIds] = useState([]);
     const [selectedPO, setSelectedPO] = useState(null);
     const [poInput, setPoInput] = useState('');
     const [poRecommendations, setPoRecommendations] = useState([]);
@@ -55,6 +56,69 @@ const CheckIn = () => {
         return () => clearInterval(intervalId);
     }, [selectedPO]);
 
+    const handleItemSelectionChange = (itemId, isSelected) => {
+        setSelectedItemIds(prevSelectedItemIds => {
+            if (isSelected) {
+                return [...prevSelectedItemIds, itemId];
+            } else {
+                return prevSelectedItemIds.filter(id => id !== itemId);
+            }
+        });
+    };
+
+    // Function to combine selected items
+    const combineItems = async () => {
+        if (selectedItemIds.length < 2) {
+            alert("Please select at least two items to combine.");
+            return;
+        }
+    
+        try {
+            const combinedItem = {
+                description: '',
+                quantity: 0,
+                purchase_price: 0,
+                progress: 'received',
+                purchase_order_id: selectedPO,
+                // ... other necessary fields ...
+            };
+    
+            for (const itemId of selectedItemIds) {
+                const response = await axios.get(`http://${server_address}/items/${itemId}`);
+                const item = response.data;
+                combinedItem.name = item.name;
+                combinedItem.description += `${item.name}, `;
+                combinedItem.quantity += item.quantity || 1;
+                combinedItem.purchase_price += item.purchase_price || 0;
+            }
+    
+            combinedItem.name = 'Lot ' + combinedItem.name;
+    
+            const response = await axios.post(`http://${server_address}/items`, combinedItem);
+            const newCombinedItemId = response.data.itemId;
+    
+            // Delete combined items
+            for (const itemId of selectedItemIds) {
+                await axios.delete(`http://${server_address}/items/${itemId}`);
+            }
+    
+            // Update UI
+            setItems(prevItems => [
+                ...prevItems.filter(item => !selectedItemIds.includes(item.id)),
+                {
+                    id: newCombinedItemId,
+                    ...combinedItem
+                }
+            ]);
+    
+            // Reset selected items
+            setSelectedItemIds([]);
+    
+        } catch (error) {
+            console.error('Error combining items:', error);
+        }
+    };
+    
     const handleItemChange = (itemId, attribute, newValue) => {
         setItems(prevItems => 
             prevItems.map(item => 
@@ -95,7 +159,8 @@ const CheckIn = () => {
             progress: 'received',
             purchase_order_id: selectedPO,
             observed_condition: '',
-            // ... additional fields ...
+            isLot: false,
+            quantity: 1,
         };
 
         try {
@@ -125,11 +190,16 @@ const CheckIn = () => {
             {selectedPO && items.length > 0 && (
                 <ItemList 
                     items={items} 
+                    selectedItemIds={selectedItemIds}
+                    handleItemSelectionChange={handleItemSelectionChange}
                     handlePrintBarcode={handlePrintBarcode}
                     handleItemChange={handleItemChange}
                     handleDelete={handleDelete}
                 />
             )}
+            <button onClick={combineItems} disabled={selectedItemIds.length < 2}>
+                Combine Selected Items
+            </button>
             <AddButton handleAdd={handleAdd} />
         </div>
     );
