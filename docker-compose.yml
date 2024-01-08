@@ -21,12 +21,12 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - "${ADMINER_PORT}:8080"
 
   express:
     build: ./express
     ports:
-      - "3000:3000"
+      - "${EXPRESS_PORT}:3000"
     depends_on:
       - db
     environment:
@@ -36,7 +36,7 @@ services:
       DB_DATABASE: ${MYSQL_DATABASE}
     secrets:
       - mysql_user_password
-  
+
   checkin:
     build: 
       context: ./checkin
@@ -44,7 +44,7 @@ services:
       args:
         - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
     ports:
-      - "3001:3000"
+      - "${CHECKIN_PORT}:3000"
     environment:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
@@ -55,10 +55,9 @@ services:
       args:
         - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
     ports:
-      - "3002:3000"
+      - "${PO_FROM_EXCEL_PORT}:3000"
     environment:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
-
 
 volumes:
   db_data:
