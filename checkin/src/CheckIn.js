@@ -7,7 +7,7 @@ import handlePrintBarcode from './components/HandleBarcode';
 
 import './CheckIn.css';
 
-const server_address = process.env.EXPRESS_SERVER_ADDRESS || "localhost:3000";
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
 
 const CheckIn = () => {
     const [items, setItems] = useState([]);
