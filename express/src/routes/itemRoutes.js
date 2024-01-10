@@ -28,8 +28,8 @@ router.get('/:id', (req, res) => {
 
 // Create a new item
 router.post('/', (req, res) => {
-    const { upc, name, current_location, description, notes, purchase_price, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity } = req.body;
-    pool.query('INSERT INTO items (upc, name, current_location, description, notes, purchase_price, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [upc, name, current_location, description, notes, purchase_price, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity], (error, results) => {
+    const { upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity } = req.body;
+    pool.query('INSERT INTO items (upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity], (error, results) => {
         if (error) {
             return res.status(500).json({ error });
         }
@@ -41,7 +41,7 @@ router.post('/', (req, res) => {
 // Update an item and record the changes
 router.put('/:id', (req, res) => {
     const { id } = req.params;
-    const { upc, name, current_location, description, notes, purchase_price, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity } = req.body;
+    const { upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity } = req.body;
 
     pool.getConnection((err, connection) => {
         if (err) {
@@ -70,7 +70,7 @@ router.put('/:id', (req, res) => {
                 }
 
                 const currentData = results[0];
-                connection.query('UPDATE items SET upc = ?, name = ?, current_location = ?, description = ?, notes = ?, purchase_price = ?, vendor_id = ?, purchase_order_id = ?, observed_condition = ?, progress = ?, isLot = ?, quantity = ? WHERE id = ?', [upc, name, current_location, description, notes, purchase_price, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity, id], error => {
+                connection.query('UPDATE items SET upc = ?, name = ?, current_location = ?, description = ?, notes = ?, purchase_price = ?, vender_inventory_label = ?, vendor_id = ?, purchase_order_id = ?, observed_condition = ?, progress = ?, isLot = ?, quantity = ? WHERE id = ?', [upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity, id], error => {
                     if (error) {
                         return connection.rollback(() => {
                             connection.release();

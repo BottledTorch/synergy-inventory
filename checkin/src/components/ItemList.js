@@ -28,12 +28,13 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                         <th>Is Lot</th>
                         <th>Progress</th>
                         <th>Condition</th>
-                        <th></th>
+                        <th>Vendor Label</th> {/* New column for Vendor Label */}
+                        <th></th> {/* Column for Delete button */}
                     </tr>
                 </thead>
                 <tbody>
                     {items.map(item => (
-                        <tr key={item.id}>
+                        <tr key={item.id} style={{ backgroundColor: getBackgroundColor(item.progress) }}>
                             <td>
                                 <input
                                     type="checkbox"
@@ -87,6 +88,9 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                             </td>
                             <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'observed_condition', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
                                 {item.observed_condition}
+                            </td>
+                            <td>
+                                {item.vender_inventory_label} {/* Display Vendor Label */}
                             </td>
                             <td>
                                 <button onClick={() => handleDelete(item.id)}>Delete</button>

@@ -13,6 +13,7 @@ const CheckIn = () => {
     const [items, setItems] = useState([]);
     const [purchaseOrders, setPurchaseOrders] = useState([]);
     const [selectedItemIds, setSelectedItemIds] = useState([]);
+    const [vendorLabelSearch, setVendorLabelSearch] = useState('');
     const [selectedPO, setSelectedPO] = useState(null);
     const [poInput, setPoInput] = useState('');
     const [poRecommendations, setPoRecommendations] = useState([]);
@@ -55,6 +56,16 @@ const CheckIn = () => {
 
         return () => clearInterval(intervalId);
     }, [selectedPO]);
+
+    const handleVendorLabelSearch = () => {
+        console.log(vendorLabelSearch)
+        const foundItem = items.find(item => item.vender_inventory_label === vendorLabelSearch);
+        if (foundItem) {
+            handleItemChange(foundItem.id, 'progress', 'received');
+        } else {
+            alert('Item not found');
+        }
+    };
 
     const handleItemSelectionChange = (itemId, isSelected) => {
         setSelectedItemIds(prevSelectedItemIds => {
@@ -180,29 +191,46 @@ const CheckIn = () => {
     };
 
     return (
-        <div>
-            <PurchaseOrderInput 
-                poInput={poInput}
-                setPoInput={setPoInput}
-                poRecommendations={poRecommendations}
-                setSelectedPO={setSelectedPO}
-            />
-            {selectedPO && items.length > 0 && (
-                <ItemList 
-                    items={items} 
-                    selectedItemIds={selectedItemIds}
-                    handleItemSelectionChange={handleItemSelectionChange}
-                    handlePrintBarcode={handlePrintBarcode}
-                    handleItemChange={handleItemChange}
-                    handleDelete={handleDelete}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div>
+                <PurchaseOrderInput 
+                    poInput={poInput}
+                    setPoInput={setPoInput}
+                    poRecommendations={poRecommendations}
+                    setSelectedPO={setSelectedPO}
                 />
+                {selectedPO && items.length > 0 && (
+                    <div>
+                        <ItemList 
+                            items={items} 
+                            selectedItemIds={selectedItemIds}
+                            handleItemSelectionChange={handleItemSelectionChange}
+                            handlePrintBarcode={handlePrintBarcode}
+                            handleItemChange={handleItemChange}
+                            handleDelete={handleDelete}
+                        />
+                    </div>
+                )}
+            </div>
+            {selectedPO && items.length > 0 && (
+                <div style={{ position: 'fixed', right: '20px', top: '50%' }}>
+                    <div>
+                        <input 
+                            type="text" 
+                            placeholder="Enter Vendor Label" 
+                            value={vendorLabelSearch} 
+                            onChange={(e) => setVendorLabelSearch(e.target.value)} 
+                        />
+                        <button onClick={handleVendorLabelSearch}>Mark as Received</button>
+                    </div>
+                    <button onClick={combineItems} disabled={selectedItemIds.length < 2}>
+                        Combine Selected Items
+                    </button>
+                    <AddButton handleAdd={handleAdd} />
+                </div>
             )}
-            <button onClick={combineItems} disabled={selectedItemIds.length < 2}>
-                Combine Selected Items
-            </button>
-            <AddButton handleAdd={handleAdd} />
         </div>
-    );
+    );    
 };
 
 export default CheckIn;

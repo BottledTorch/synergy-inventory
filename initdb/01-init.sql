@@ -30,6 +30,7 @@ CREATE TABLE items (
     description TEXT,
     notes TEXT,
     purchase_price DECIMAL(10,2) CHECK (purchase_price >= 0),
+    vender_inventory_label TEXT,
     vendor_id INT,
     purchase_order_id INT,
     observed_condition VARCHAR(255),

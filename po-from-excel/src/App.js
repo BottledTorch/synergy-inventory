@@ -14,10 +14,12 @@ function App() {
     const [purchasePriceColumn, setPurchasePriceColumn] = useState(null);
     const [upcColumn, setUPCColumn] = useState(null);
     const [notesColumns, setNotesColumns] = useState(null);
+    const [vendorInventoryLabelColumn, setvendorInventoryLabelColumn] = useState('');
 
 	const [poNumber, setPONumber] = useState(''); // New state for storing PO number
 	const [vendor, setVendor] = useState('')
 	const [orderDate, setOrderDate] = useState('');
+    
 
 	const handleFileLoaded = (data) => {
 		setFileData(data);
@@ -38,6 +40,11 @@ function App() {
     const handleNotesChange = (columns) => {
 		setNotesColumns(columns);
 	};
+
+    const handleVendorInventoryLabelChange = (newVendorInventoryLabel) => {
+		setvendorInventoryLabelColumn(newVendorInventoryLabel);
+	};
+
 
 	const handlePONumberChange = (newPONumber) => {
 		setPONumber(newPONumber);
@@ -64,6 +71,7 @@ function App() {
       console.log('purchasePriceColumn:', purchasePriceColumn);
       console.log('upcColumn:', upcColumn);
       console.log('notesColumns:', notesColumns);
+      console.log('vendorInventoryLabelColumn:', vendorInventoryLabelColumn);
       console.log()
       console.log('PO Number:', poNumber);
       console.log('Vendor Name:', vendor);
@@ -136,12 +144,16 @@ function App() {
                 // ... additional fields ...
             };
             
-            if (purchasePriceColumn && item[purchasePriceColumn]) {
-                itemPayload.purchase_price = item[purchasePriceColumn];
+            if (purchasePriceColumn && item[purchasePriceColumn.value]) {
+                itemPayload.purchase_price = item[purchasePriceColumn.value];
             }
             
-            if (upcColumn && item[upcColumn]) {
-                itemPayload.upc = item[upcColumn];
+            if (upcColumn && item[upcColumn.value]) {
+                itemPayload.upc = item[upcColumn.value];
+            }
+
+            if (vendorInventoryLabelColumn && item[vendorInventoryLabelColumn.value]) {
+                itemPayload.vender_inventory_label = item[vendorInventoryLabelColumn.value];
             }
             
             if (notesColumns && notesColumns.some(col => item[col])) {
@@ -228,6 +240,7 @@ function App() {
                     handlePurchasePriceChange={handlePurchasePriceChange}
                     handleUPCCodeChange={handleUPCCodeChange}
                     handleNotesChange={handleNotesChange}
+                    handleVendorInventoryLabelChange={handleVendorInventoryLabelChange}
                     poNumber={poNumber}
                     onPONumberChange={handlePONumberChange}
                 />

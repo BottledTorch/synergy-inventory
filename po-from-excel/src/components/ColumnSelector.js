@@ -3,12 +3,13 @@ import CreatableSelect from 'react-select/creatable';
 import axios from 'axios';
 const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
 
-const ColumnSelector = ({ data, handleItemNameChange, handlePurchasePriceChange, handleUPCCodeChange, handleNotesChange, poNumber, onPONumberChange }) => {
+const ColumnSelector = ({ data, handleItemNameChange, handlePurchasePriceChange, handleUPCCodeChange, handleNotesChange, handleVendorInventoryLabelChange, poNumber, onPONumberChange }) => {
   const [columns, setColumns] = useState([]);
   const [selectedItemName, setSelectedItemName] = useState([]);
   const [selectedPurchasePrice, setSelectedPurchasePrice] = useState(null);
   const [selectedUPCCode, setSelectedUPCCode] = useState(null);
   const [selectedNotes, setSelectedNotes] = useState([]);
+  const [selectedVendorInventoryLabel, setSelectedVendorInventoryLabel] = useState([])
   const [previewData, setPreviewData] = useState([]);
   const [isPOLoading, setPOLoading] = useState(false);
   const [poError, setPOError] = useState('');
@@ -31,18 +32,25 @@ const ColumnSelector = ({ data, handleItemNameChange, handlePurchasePriceChange,
 
   const onPurchasePriceChange = (value) => {
     setSelectedPurchasePrice(value);
-    handlePurchasePriceChange(value.map(v => v.value));
+    handlePurchasePriceChange(value);
   };
 
   const onUPCCodeChange = (value) => {
     setSelectedUPCCode(value);
-    handleUPCCodeChange(value.map(v => v.value));
+    handleUPCCodeChange(value);
   };
 
   const onNotesChange = (value) => {
+    console.log(value.value)
     setSelectedNotes(value);
     handleNotesChange(value.map(v => v.value));
   };
+
+  const onVendorInventoryLabelChange = (value) => {
+    console.log(value.value)
+    setSelectedVendorInventoryLabel(value)
+    handleVendorInventoryLabelChange(value);
+  }
 
   const checkPONumberExists = async () => {
     setPOLoading(true);
@@ -137,6 +145,18 @@ const ColumnSelector = ({ data, handleItemNameChange, handlePurchasePriceChange,
           options={columns}
           value={selectedNotes}
           onChange={(value) => onNotesChange(value)}
+          classNamePrefix="select"
+        />
+      </div>
+
+      <div style={selectorStyle}>
+        <label htmlFor="vendor-inventory-label-select">Vendor Inventory Number:</label>
+        <CreatableSelect
+          id="vendor-inventory-label"
+          name="vendor-inventory-label"
+          options={columns}
+          value={selectedVendorInventoryLabel}
+          onChange={(value) => onVendorInventoryLabelChange(value)}
           classNamePrefix="select"
         />
       </div>
