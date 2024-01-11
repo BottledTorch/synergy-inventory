@@ -5,6 +5,11 @@ const PurchaseOrderInput = ({ poInput, setPoInput, poRecommendations, setSelecte
     const [isFocused, setIsFocused] = useState(false);
     const blurTimeoutRef = useRef(null);
 
+    // Filter the recommendations based on the user's input
+    const filteredRecommendations = poRecommendations.filter(po => 
+        po.id.toString().includes(poInput)
+    );
+
     return (
         <div className="inputWrapper">
             <input 
@@ -26,7 +31,7 @@ const PurchaseOrderInput = ({ poInput, setPoInput, poRecommendations, setSelecte
             />
             {poInput && isFocused && (
                 <div className="poRecommendations">
-                    {poRecommendations.slice(0, 6).map(po => (
+                    {filteredRecommendations.slice(0, 6).map(po => (
                         <div 
                             key={po.id} 
                             onClick={() => {

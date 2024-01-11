@@ -44,6 +44,7 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                             </td>
                             <td>
                                 <button onClick={() => handlePrintBarcode(item.id)}>Barcode</button>
+                                <p>{item.id}</p>
                             </td>
                             <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'purchase_order_id', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
                                 {item.purchase_order_id}
