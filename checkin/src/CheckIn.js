@@ -62,6 +62,10 @@ const CheckIn = () => {
         const foundItem = items.find(item => item.vender_inventory_label === vendorLabelSearch);
         if (foundItem) {
             handleItemChange(foundItem.id, 'progress', 'received');
+            if (foundItem.quantity === null || foundItem.quantity === '') {
+                handleItemChange(foundItem.id, 'quantity', 1);
+            }
+            handlePrintBarcode(foundItem.id)
         } else {
             alert('Item not found');
         }

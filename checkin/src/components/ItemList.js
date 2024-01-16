@@ -82,7 +82,15 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                                     <option value="junk">Junk</option>
                                 </select>
                                 <button 
-                                    onClick={() => handleItemChange(item.id, 'progress', 'received')}
+                                    onClick={
+                                        () => 
+                                        {
+                                            handleItemChange(item.id, 'progress', 'received')
+                                            if (item.quantity === null || item.quantity === '') {
+                                                handleItemChange(item.id, 'quantity', 1);
+                                            }
+                                        }
+                                    }
                                     style={{'margin': '5px'}}>
                                         Received
                                 </button>

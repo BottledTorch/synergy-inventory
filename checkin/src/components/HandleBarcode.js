@@ -52,12 +52,10 @@ const handlePrintBarcode = (itemId) => {
                     <img class="barcode-image" src="${barcodeDataUrl}" />
                 </div>
                 <script>
-                    window.onload = function() {
-                        window.print();
-                        window.onafterprint = function() {
-                            window.close();
-                        };
+                    window.onafterprint = function() {
+                        window.close();
                     };
+                    window.print();
                 </script>
             </body>
         </html>

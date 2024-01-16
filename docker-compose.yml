@@ -59,6 +59,17 @@ services:
     environment:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
+  checkout:
+    build:
+      context: ./checkout
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+    ports:
+      - "${CHECKOUT_PORT}:3000"
+    environment:
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+
 volumes:
   db_data:
 
