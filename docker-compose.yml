@@ -50,41 +50,58 @@ services:
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD_FILE: /run/secrets/mysql_user_password
       DB_DATABASE: ${MYSQL_DATABASE}
+      MINIO_HOST: 10.1.0.16
+      MINIO_PORT: 9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_password
     secrets:
       - mysql_user_password
+      - minio_password
 
   checkin:
     build: 
       context: ./checkin
       dockerfile: Dockerfile
       args:
-        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
     ports:
       - "${CHECKIN_PORT}:3000"
     environment:
-      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
 
   po-from-excel:
     build:
       context: ./po-from-excel
       dockerfile: Dockerfile
       args:
-        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
     ports:
       - "${PO_FROM_EXCEL_PORT}:3000"
     environment:
-      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
 
   checkout:
     build:
       context: ./checkout
       dockerfile: Dockerfile
       args:
-        - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
     ports:
       - "${CHECKOUT_PORT}:3000"
     environment:
-      - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
+
+  upload-pictures:
+    build: 
+      context: ./upload-pictures
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
+    ports:
+      - "${UPLOAD_PICTURES_PORT}:3000"
+    environment:
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
+      - REACT_APP_MINIO_SERVER_ADDRESS=${SERVER_IP}:${MINIO_PORT}
 
 volumes:
   minio_data:

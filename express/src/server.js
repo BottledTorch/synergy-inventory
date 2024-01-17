@@ -1,6 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Minio = require('minio');
+const fs = require('fs')
+
+// MinIO client configuration
+const minioClient = new Minio.Client({
+    endPoint: process.env.MINIO_HOST, // Set to 'minio' if using Docker's internal network
+    port: parseInt(process.env.MINIO_PORT, 10),
+    useSSL: false, // Set to true if SSL is configured
+    accessKey: process.env.MINIO_ROOT_USER,
+    secretKey: fs.readFileSync(process.env.MINIO_ROOT_PASSWORD_FILE, 'utf8').trim()
+});
+
 
 const server = express();
 server.use(cors());
@@ -18,6 +30,20 @@ server.use('/vendors', vendorsRoutes);
 server.use('/purchase_orders', purchaseOrdersRoutes);
 server.use('/sales', salesRoutes);
 server.use('/item_status_history', itemStatusHistoryRoutes);
+
+server.get('/generate-presigned-urls', async (req, res) => {
+    const { itemID, fileCount } = req.query;
+    try {
+        const urls = [];
+        for (let i = 0; i < fileCount; i++) {
+            const url = await minioClient.presignedPutObject('itemimages', `/ITM-${itemID}-${i}`, 60 * 60); // 1 hour expiry
+            urls.push(url);
+        }
+        res.json(urls);
+    } catch (error) {
+        res.status(500).send("Error generating URLs: " + error.message);
+    }
+});
 
 
 const PORT = process.env.PORT || 3000;
