@@ -3,8 +3,8 @@ import axios from 'axios';
 import QRCode from 'qrcode.react';
 import './ItemUpdater.css';
 
-const server_address = "10.1.0.16:3000"; // Replace with your actual server address
-const image_app_address = "10.1.0.16:3004"; // Replace with your actual server address
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS; // Replace with your actual server address
+const image_app_address = process.env.REACT_APP_UPLOAD_PICTURES_SERVER_ADDRESS; // Replace with your actual server address
 
 const ItemListingHelper = () => {
     const [searchId, setSearchId] = useState('');

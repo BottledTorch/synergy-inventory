@@ -6,14 +6,16 @@ const fs = require('fs')
 
 const MINIO_HOST = process.env.MINIO_HOST
 const MINIO_PORT = process.env.MINIO_PORT
+const MINIO_ROOT_USER = process.env.MINIO_ROOT_USER
+const MINIO_ROOT_USER_PASSWORD = fs.readFileSync(process.env.MINIO_ROOT_PASSWORD_FILE, 'utf8').trim()
 
 // MinIO client configuration
 const minioClient = new Minio.Client({
     endPoint: MINIO_HOST, // Set to 'minio' if using Docker's internal network
     port: parseInt(MINIO_PORT, 10),
     useSSL: false, // Set to true if SSL is configured
-    accessKey: process.env.MINIO_ROOT_USER,
-    secretKey: fs.readFileSync(process.env.MINIO_ROOT_PASSWORD_FILE, 'utf8').trim()
+    accessKey: MINIO_ROOT_USER,
+    secretKey: MINIO_ROOT_USER_PASSWORD
 });
 
 
@@ -25,6 +27,7 @@ const vendorsRoutes = require('./routes/vendorRoutes.js');
 const purchaseOrdersRoutes = require('./routes/purchaseOrderRoutes.js');
 const salesRoutes = require('./routes/salesRoutes.js');
 const itemStatusHistoryRoutes = require('./routes/itemStatusHistoryRoutes.js');
+const imageRoutes = require('./routes/imageRoutes.js');
 
 server.use(bodyParser.json());
 
@@ -33,6 +36,7 @@ server.use('/vendors', vendorsRoutes);
 server.use('/purchase_orders', purchaseOrdersRoutes);
 server.use('/sales', salesRoutes);
 server.use('/item_status_history', itemStatusHistoryRoutes);
+server.use('/images', imageRoutes)
 
 server.get('/generate-presigned-urls', async (req, res) => {
     const { itemID, fileCount } = req.query;
@@ -53,8 +57,6 @@ server.get('/generate-presigned-urls', async (req, res) => {
         res.status(500).send("Error generating URLs: " + error.message);
     }
 });
-
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

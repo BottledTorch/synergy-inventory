@@ -50,10 +50,11 @@ services:
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD_FILE: /run/secrets/mysql_user_password
       DB_DATABASE: ${MYSQL_DATABASE}
-      MINIO_HOST: 10.1.0.16
-      MINIO_PORT: 9000
+      MINIO_HOST: ${SERVER_IP}
+      MINIO_PORT: ${MINIO_PORT}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_password
+      
     secrets:
       - mysql_user_password
       - minio_password
@@ -91,6 +92,19 @@ services:
     environment:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
 
+  item-listing:
+    build: 
+      context: ./item-listing
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
+        - REACT_APP_UPLOAD_PICTURES_SERVER_ADDRESS=${SERVER_IP}:${UPLOAD_PICTURES_PORT}
+    ports:
+      - "${ITEM_LISTING_PORT}:3000"
+    environment:
+      - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
+      - REACT_APP_UPLOAD_PICTURES_SERVER_ADDRESS=${SERVER_IP}:${UPLOAD_PICTURES_PORT}
+
   upload-pictures:
     build: 
       context: ./upload-pictures
@@ -101,7 +115,6 @@ services:
       - "${UPLOAD_PICTURES_PORT}:3000"
     environment:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${SERVER_IP}:${EXPRESS_PORT}
-      - REACT_APP_MINIO_SERVER_ADDRESS=${SERVER_IP}:${MINIO_PORT}
 
 volumes:
   minio_data:

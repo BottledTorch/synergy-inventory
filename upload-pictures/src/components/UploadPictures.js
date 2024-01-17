@@ -7,7 +7,7 @@ const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS || '10.1.0.1
 const UploadPictures = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // New state to store uploaded image URLs
+    const [uploadedImageUrls, setUploadedImageUrls] = useState([]);
     const [message, setMessage] = useState('');
     const { itemId } = useParams(); // Get the item ID from the URL
 
@@ -43,8 +43,6 @@ const UploadPictures = () => {
 
             const { presignedUrls, accessUrls } = response.data;
 
-            console.log(response)
-
             await Promise.all(selectedFiles.map((file, index) => {
                 return axios.put(presignedUrls[index], file, {
                     headers: {
@@ -54,11 +52,20 @@ const UploadPictures = () => {
             }));
 
             setUploadedImageUrls(accessUrls); // Update state with access URLs
-            setMessage("Images uploaded successfully.");
-        } catch (error) {
-            setMessage("Error uploading images: " + error.message);
-        }
 
+            // Create new image items in the database
+            await Promise.all(accessUrls.map((url, index) => {
+                return axios.post(`http://${server_address}/images`, {
+                    item_id: selectedItem.id,
+                    image_url: url,
+                    image_description: `Image uploaded for item ${selectedItem.id}`
+                });
+            }));
+
+            setMessage("Images uploaded and items created successfully.");
+        } catch (error) {
+            setMessage("Error uploading images and creating items: " + error.message);
+        }
     };
 
     return (
