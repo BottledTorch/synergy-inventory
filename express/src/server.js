@@ -4,10 +4,13 @@ const cors = require('cors');
 const Minio = require('minio');
 const fs = require('fs')
 
+const MINIO_HOST = process.env.MINIO_HOST
+const MINIO_PORT = process.env.MINIO_PORT
+
 // MinIO client configuration
 const minioClient = new Minio.Client({
-    endPoint: process.env.MINIO_HOST, // Set to 'minio' if using Docker's internal network
-    port: parseInt(process.env.MINIO_PORT, 10),
+    endPoint: MINIO_HOST, // Set to 'minio' if using Docker's internal network
+    port: parseInt(MINIO_PORT, 10),
     useSSL: false, // Set to true if SSL is configured
     accessKey: process.env.MINIO_ROOT_USER,
     secretKey: fs.readFileSync(process.env.MINIO_ROOT_PASSWORD_FILE, 'utf8').trim()
@@ -34,16 +37,23 @@ server.use('/item_status_history', itemStatusHistoryRoutes);
 server.get('/generate-presigned-urls', async (req, res) => {
     const { itemID, fileCount } = req.query;
     try {
-        const urls = [];
+        const presignedUrls = [];
+        const accessUrls = [];
         for (let i = 0; i < fileCount; i++) {
-            const url = await minioClient.presignedPutObject('itemimages', `/ITM-${itemID}-${i}`, 60 * 60); // 1 hour expiry
-            urls.push(url);
+            const objectName = `ITM-${itemID}-${i}`;
+            const presignedUrl = await minioClient.presignedPutObject('itemimages', objectName, 60 * 60); // 1 hour expiry
+            presignedUrls.push(presignedUrl);
+
+            // Assuming the MinIO server is accessible at the same address and the images are publicly accessible
+            const accessUrl = `http://${MINIO_HOST}:${MINIO_PORT}/itemimages/${objectName}`;
+            accessUrls.push(accessUrl);
         }
-        res.json(urls);
+        res.json({ presignedUrls, accessUrls });
     } catch (error) {
         res.status(500).send("Error generating URLs: " + error.message);
     }
 });
+
 
 
 const PORT = process.env.PORT || 3000;

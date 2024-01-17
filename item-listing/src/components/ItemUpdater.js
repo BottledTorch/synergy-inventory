@@ -4,7 +4,7 @@ import QRCode from 'qrcode.react';
 import './ItemUpdater.css';
 
 const server_address = "10.1.0.16:3000"; // Replace with your actual server address
-const minio_address = "10.1.0.16:9000"; // Replace with your MinIO server address
+const image_app_address = "10.1.0.16:3004"; // Replace with your actual server address
 
 const ItemListingHelper = () => {
     const [searchId, setSearchId] = useState('');
@@ -26,23 +26,6 @@ const ItemListingHelper = () => {
         setSelectedFile(event.target.files[0]);
     };
 
-    const handleUpload = () => {
-        if (!selectedFile) {
-            setMessage("No file selected for upload.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-
-        axios.post(`http://${minio_address}/upload/${item.id}`, formData)
-            .then(response => {
-                setMessage("Image uploaded successfully. URL: " + response.data.url);
-            })
-            .catch(error => {
-                setMessage("Error uploading image: " + error.message);
-            });
-    };
 
     const updateListing = () => {
         axios.put(`http://${server_address}/items/${item.id}`, item)
@@ -118,9 +101,7 @@ const ItemListingHelper = () => {
                     </button>
 
                     <div>
-                        <QRCode value={`http://${server_address}/upload?itemId=${item.id}`} />
-                        <input type="file" onChange={handleFileChange} />
-                        <button onClick={handleUpload}>Upload Image</button>
+                        <QRCode value={`http://${image_app_address}/item-id/${item.id}`} />
                     </div>
                 </>
             )}

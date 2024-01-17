@@ -1,51 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
-const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS || '10.1.0.16:3000'
-
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS || '10.1.0.16:3000';
 
 const UploadPictures = () => {
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [uploadedImageUrls, setUploadedImageUrls] = useState([]); // New state to store uploaded image URLs
     const [message, setMessage] = useState('');
+    const { itemId } = useParams(); // Get the item ID from the URL
 
-    const handleSearch = () => {
-        let itemId = searchQuery.replace(/^ITM-/, ''); // Remove "ITM-" prefix if present
-        itemId = encodeURIComponent(itemId); // URL-encode the item ID
-        console.log(server_address)
-        axios.get(`http://${server_address}/items/${itemId}`)
-            .then(response => {
-                setSelectedItem(response.data);
-            })
-            .catch(error => {
-                setMessage("Error fetching item: " + error.message);
-            });
-    };
+    useEffect(() => {
+        if (itemId) {
+            // Fetch item details and set as selected item
+            axios.get(`http://${server_address}/items/${itemId}`)
+                .then(response => {
+                    setSelectedItem(response.data);
+                })
+                .catch(error => {
+                    setMessage("Error fetching item: " + error.message);
+                });
+        }
+    }, [itemId]);
 
     const handleFileChange = (event) => {
         setSelectedFiles(Array.from(event.target.files));
     };
-    
 
     const handleUpload = async () => {
         if (selectedFiles.length === 0 || !selectedItem) {
             setMessage("Select an item and files to upload.");
             return;
         }
-    
         try {
-            // Request pre-signed URLs from the Express server
             const response = await axios.get(`http://${server_address}/generate-presigned-urls`, {
                 params: {
                     itemID: selectedItem.id,
                     fileCount: selectedFiles.length
                 }
             });
-    
-            const presignedUrls = response.data;
-    
-            // Upload files directly to MinIO using the pre-signed URLs
+
+            const { presignedUrls, accessUrls } = response.data;
+
+            console.log(response)
+
             await Promise.all(selectedFiles.map((file, index) => {
                 return axios.put(presignedUrls[index], file, {
                     headers: {
@@ -53,29 +52,30 @@ const UploadPictures = () => {
                     }
                 });
             }));
-    
+
+            setUploadedImageUrls(accessUrls); // Update state with access URLs
             setMessage("Images uploaded successfully.");
         } catch (error) {
             setMessage("Error uploading images: " + error.message);
         }
+
     };
 
     return (
         <div>
-            <input
-                type="text"
-                placeholder="Enter Item ID (e.g., ITM-123 or 123)"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-
+            {/* Display the selected item and upload UI */}
             {selectedItem && <div>
                 <h3>Selected Item: {selectedItem.name}</h3>
                 <input type="file" multiple onChange={handleFileChange} />
                 <button onClick={handleUpload}>Upload Images</button>
+                {/* Display uploaded image URLs */}
+                {uploadedImageUrls.map((url, index) => (
+                    <div key={index}>
+                        <a href={url} target="_blank" rel="noopener noreferrer">Image {index + 1}: {url}</a>
+                    </div>
+                ))}
             </div>}
-
+    
             {message && <p>{message}</p>}
         </div>
     );

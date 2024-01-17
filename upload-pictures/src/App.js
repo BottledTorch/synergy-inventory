@@ -1,4 +1,5 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import UploadPictures from './components/UploadPictures';
 import './App.css';
 
@@ -8,7 +9,9 @@ function App() {
       <header className="App-header">
         <h1>Upload Pictures</h1>
       </header>
-      <UploadPictures />
+      <Routes>
+        <Route path="/item-id/:itemId" element={<UploadPictures />} />
+      </Routes>
     </div>
   );
 }
