@@ -11,4 +11,7 @@ const pool = mysql.createPool({
     database: process.env.DB_DATABASE // your database name
 });
 
+console.log(process.env.DB_USER)
+console.log(password)
+
 module.exports = pool;

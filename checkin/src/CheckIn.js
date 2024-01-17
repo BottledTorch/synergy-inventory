@@ -7,7 +7,7 @@ import handlePrintBarcode from './components/HandleBarcode';
 
 import './CheckIn.css';
 
-const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS || 'localhost:3000';
 
 const CheckIn = () => {
     const [items, setItems] = useState([]);
@@ -61,14 +61,21 @@ const CheckIn = () => {
         console.log(vendorLabelSearch)
         const foundItem = items.find(item => item.vender_inventory_label === vendorLabelSearch);
         if (foundItem) {
-            handleItemChange(foundItem.id, 'progress', 'received');
+            const updatedAttributes = {
+                progress: 'received'
+            };
+        
             if (foundItem.quantity === null || foundItem.quantity === '') {
-                handleItemChange(foundItem.id, 'quantity', 1);
+                updatedAttributes.quantity = 1;
             }
-            handlePrintBarcode(foundItem.id)
+        
+            handleItemChange(foundItem.id, updatedAttributes);
+            console.log(foundItem.id)
+            handlePrintBarcode(foundItem.id);
         } else {
             alert('Item not found');
         }
+        
     };
 
     const handleItemSelectionChange = (itemId, isSelected) => {
@@ -134,17 +141,17 @@ const CheckIn = () => {
         }
     };
     
-    const handleItemChange = (itemId, attribute, newValue) => {
-        setItems(prevItems => 
-            prevItems.map(item => 
-                item.id === itemId ? { ...item, [attribute]: newValue } : item
+    const handleItemChange = (itemId, updatedAttributes) => {
+        setItems(prevItems =>
+            prevItems.map(item =>
+                item.id === itemId ? { ...item, ...updatedAttributes } : item
             )
         );
-
+    
         const updatedItem = items.find(item => item.id === itemId);
         if (updatedItem) {
             const url = `http://${server_address}/items/${itemId}`;
-            axios.put(url, { ...updatedItem, [attribute]: newValue })
+            axios.put(url, { ...updatedItem, ...updatedAttributes })
                 .then(response => {
                     console.log("Item updated:", response.data);
                 })
@@ -153,6 +160,7 @@ const CheckIn = () => {
                 });
         }
     };
+    
 
     const handleDelete = (itemId) => {
         if (window.confirm("Are you sure you want to delete this item?")) {

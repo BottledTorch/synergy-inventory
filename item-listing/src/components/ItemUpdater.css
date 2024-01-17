@@ -1,0 +1,76 @@
+/* ItemUpdater.css */
+
+/* General Styles */
+.item-updater-container {
+    padding: 20px;
+    max-width: 800px; /* Adjust the max-width as per your preference */
+    margin: 20px auto; /* Increased margin at the top and bottom for better spacing */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.item-updater-header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em; /* Slightly larger font size for headers */
+    color: #333;
+}
+
+/* Table Styles */
+.item-updater-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.item-updater-table th,
+.item-updater-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.item-updater-table th {
+    background-color: #f7f7f7;
+    font-weight: bold;
+}
+
+/* Input and Textarea Styles */
+.item-updater-input,
+.item-updater-textarea {
+    width: 100%; /* Full width */
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0; /* Added a small margin to the top and bottom */
+    box-sizing: border-box;
+}
+
+.item-updater-textarea {
+    height: 100px; /* Set a fixed height for text areas */
+    resize: vertical; /* Allows vertical resizing */
+}
+
+/* Button Styles */
+.item-updater-button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: block; /* Make the button a block element */
+    width: 100%; /* Full width */
+    margin: 10px 0; /* Added a small margin to the top and bottom */
+    box-sizing: border-box;
+}
+
+.item-updater-button:hover {
+    background-color: #45a049;
+}
+
+/* Message Styles */
+.item-updater-message {
+    color: #d32f2f;
+    margin-top: 10px;
+    text-align: center;
+}

@@ -8,14 +8,30 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_USER: mahnkemj
+      MYSQL_USER: ${MYSQL_USER}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./database/mysql:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
+      - /etc/timezone:/etc/timezone:ro
     secrets:
       - mysql_root_password
       - mysql_user_password
+
+  minio:
+    build: ./minio
+    container_name: minio
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    volumes:
+      - ./database/minio:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_password
+    secrets:
+      - minio_password
+      - synergy_user_password
 
   adminer:
     image: adminer
@@ -31,7 +47,7 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_USER: mahnkemj
+      DB_USER: ${MYSQL_USER}
       DB_PASSWORD_FILE: /run/secrets/mysql_user_password
       DB_DATABASE: ${MYSQL_DATABASE}
     secrets:
@@ -71,10 +87,20 @@ services:
       - REACT_APP_EXPRESS_SERVER_ADDRESS=${EXPRESS_SERVER_ADDRESS}
 
 volumes:
+  minio_data:
   db_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/database/mysql
 
 secrets:
   mysql_root_password:
     file: ./secrets/mysql_root_password
   mysql_user_password:
     file: ./secrets/mysql_user_password
+  minio_password:
+    file: ./secrets/minio_password
+  synergy_user_password:
+    file: ./secrets/synergy_user_password

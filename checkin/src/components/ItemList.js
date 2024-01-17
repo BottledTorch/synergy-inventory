@@ -46,32 +46,32 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                                 <button onClick={() => handlePrintBarcode(item.id)}>Barcode</button>
                                 <p>{item.id}</p>
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'purchase_order_id', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { purchase_order_id: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.purchase_order_id}
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'name', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { name: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.name}
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'description', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { description: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.description}
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'purchase_price', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { purchase_price: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.purchase_price}
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'quantity', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { quantity: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.quantity}
                             </td>
                             <td>
                                 <input
                                     type="checkbox"
                                     checked={item.isLot}
-                                    onChange={(e) => handleItemChange(item.id, 'isLot', e.target.checked)}
+                                    onChange={(e) => handleItemChange(item.id, { isLot: e.target.checked })}
                                 />
                             </td>
                             <td>
                                 <select 
                                     value={item.progress} 
-                                    onChange={(e) => handleItemChange(item.id, 'progress', e.target.value)}
+                                    onChange={(e) => handleItemChange(item.id, { progress: e.target.value })}
                                     style={{ backgroundColor: getBackgroundColor(item.progress) }}
                                 >
                                     <option value="not received">Not Received</option>
@@ -85,17 +85,22 @@ const ItemList = ({ items, handlePrintBarcode, handleItemChange, handleDelete, s
                                     onClick={
                                         () => 
                                         {
-                                            handleItemChange(item.id, 'progress', 'received')
+                                            const updatedAttributes = {
+                                                progress: 'received'
+                                            };
+                                        
                                             if (item.quantity === null || item.quantity === '') {
-                                                handleItemChange(item.id, 'quantity', 1);
+                                                updatedAttributes.quantity = 1;
                                             }
+                                        
+                                            handleItemChange(item.id, updatedAttributes);
                                         }
                                     }
                                     style={{'margin': '5px'}}>
                                         Received
                                 </button>
                             </td>
-                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, 'observed_condition', e.currentTarget.textContent)} suppressContentEditableWarning={true}>
+                            <td contentEditable={true} onBlur={(e) => handleItemChange(item.id, { observed_condition: e.currentTarget.textContent })} suppressContentEditableWarning={true}>
                                 {item.observed_condition}
                             </td>
                             <td>

@@ -5,7 +5,7 @@ import ItemUpdater from './components/ItemUpdater'
 function App() {
   return (
     <div className="App">
-      <h1>Sold</h1>
+      <h1>Listing Assistant</h1>
       <ItemUpdater/>
     </div>
   );

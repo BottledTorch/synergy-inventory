@@ -3,6 +3,7 @@ import React from 'react';
 const CheckoutItem = ({ item, salePrice, handleSalePriceChange, handleUpdate }) => {
     return (
         <div>
+            <h2>Item Details</h2>
             <div className="table-container">
                 <table>
                     <thead>

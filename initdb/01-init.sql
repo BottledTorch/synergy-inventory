@@ -41,6 +41,16 @@ CREATE TABLE items (
     FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(id)
 );
 
+-- Creating the images table
+CREATE TABLE images (
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT,
+    image_url VARCHAR(255) NOT NULL,
+    image_description TEXT,
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+
+
 -- Creating the sales table
 CREATE TABLE sales (
     id INT AUTO_INCREMENT PRIMARY KEY,

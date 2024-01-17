@@ -4,20 +4,20 @@ const handlePrintBarcode = (itemId) => {
     // Create a new window
     const printWindow = window.open('', '_blank');
 
-    // Create a canvas element
+    // Generate the barcode data URL
     const canvas = document.createElement('canvas');
     JsBarcode(canvas, 'ITM-' + itemId.toString(), {
         format: 'CODE128',
-        width: 2, // Width of a single bar
-        height: 50, // Height of the barcode
-        displayValue: true, // Display the text value below the barcode
-        textMargin: 2, // Margin between the barcode and the text
-        fontSize: 14 // Size of the text
+        width: 2,
+        height: 50,
+        displayValue: true,
+        textMargin: 2,
+        fontSize: 14
     });
     const barcodeDataUrl = canvas.toDataURL('image/png');
 
     // Generate the HTML content for the new window
-    printWindow.document.write(`
+    const htmlContent = `
         <html>
             <head>
                 <title>Print Barcode</title>
@@ -29,12 +29,12 @@ const handlePrintBarcode = (itemId) => {
                         text-align: center;
                     }
                     .barcode-container {
-                        width: 3.5in; // Width of 30252 label
-                        height: 1.125in; // Height of 30252 label
+                        width: 3.5in;
+                        height: 1.125in;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        page-break-after: always; // Ensure each barcode is printed on a separate label
+                        page-break-after: always;
                     }
                     .barcode-image {
                         max-width: 100%;
@@ -42,7 +42,7 @@ const handlePrintBarcode = (itemId) => {
                     }
                     @page {
                         margin: 0;
-                        size: 3.5in 1.125in; // Set page size to match label size
+                        size: 3.5in 1.125in;
                     }
                 }
                 </style>
@@ -51,18 +51,19 @@ const handlePrintBarcode = (itemId) => {
                 <div class="barcode-container">
                     <img class="barcode-image" src="${barcodeDataUrl}" />
                 </div>
-                <script>
-                    window.onafterprint = function() {
-                        window.close();
-                    };
-                    window.print();
-                </script>
             </body>
         </html>
-    `);
+    `;
 
-    // Close the document to finish writing to the new window
-    printWindow.document.close();
+    // Write the HTML content to the new window and print it when loaded
+    printWindow.document.write(htmlContent);
+    printWindow.document.close(); // Close the document to finish writing
+    printWindow.onload = function() {
+        printWindow.print();
+        printWindow.onafterprint = function() {
+            printWindow.close();
+        };
+    };
 };
 
 export default handlePrintBarcode;

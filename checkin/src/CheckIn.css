@@ -53,6 +53,9 @@ table th, table td {
 table th {
     background-color: #f2f2f2;
     font-weight: bold;
+    position: sticky;
+    top: 0; /* Adjust if you have any other fixed elements at the top of your page */
+    z-index: 10; /* Ensures the header stays on top of other content when scrolling */
 }
 
 table tr:hover {

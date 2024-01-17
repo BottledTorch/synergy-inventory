@@ -4,6 +4,8 @@ import CheckoutItem from './components/CheckoutItem';
 
 import './App.css';
 
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS;
+
 const App = () => {
     const [itemId, setItemId] = useState('');
     const [itemDetails, setItemDetails] = useState(null);
@@ -14,7 +16,7 @@ const App = () => {
 
     const fetchItemDetails = async (id) => {
         try {
-            const response = await axios.get(`http://localhost:3000/items/${id.replace('ITM-', '')}`);
+            const response = await axios.get(`http://${server_address}/items/${id.replace('ITM-', '')}`);
             setItemDetails(response.data);
         } catch (error) {
             setMessage('Error: ' + error.response.data.message);
@@ -46,14 +48,14 @@ const App = () => {
         const finalSaleSource = saleSource === 'Other' ? customSaleSource : saleSource;
 
         try {
-            await axios.post(`http://localhost:3000/sales`, {
+            await axios.post(`http://${server_address}/sales`, {
                 item_id: parseInt(itemId.replace('ITM-', '')),
                 sale_price: parseFloat(salePrice),
                 sale_date: new Date().toISOString().slice(0, 10),
                 sale_source: finalSaleSource
             });
 
-            await axios.put(`http://localhost:3000/items/${itemId.replace('ITM-', '')}`, {
+            await axios.put(`http://${server_address}/items/${itemId.replace('ITM-', '')}`, {
                 ...itemDetails,
                 quantity: itemDetails.quantity - 1
             });
@@ -67,6 +69,7 @@ const App = () => {
 
     return (
         <div className="app-container">
+            <h1>Sold</h1>
             <div className="input-container">
                 <input
                     type="text"
