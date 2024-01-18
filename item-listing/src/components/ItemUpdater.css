@@ -74,3 +74,29 @@
     margin-top: 10px;
     text-align: center;
 }
+
+/* Carousel Image Styles */
+.item-updater-container .carousel img {
+    max-width: 80%; /* Maximum width of the images */
+    max-height: 400px; /* Maximum height of the image */
+    object-fit: contain; /* Ensures that the entire image is visible without stretching */
+    border-radius: 4px; /* Optional: Adds rounded corners to the images */
+    margin: auto; /* Centers the image within the slide */
+    display: block; /* Ensure images are block elements to center them vertically */
+}
+
+
+/* Optional: Adjust Carousel Container and Controls Styling */
+.item-updater-container .carousel .carousel-slider {
+    margin-bottom: 20px; /* Add some space below the carousel */
+}
+
+.item-updater-container .carousel .control-arrow,
+.item-updater-container .carousel .control-dots .dot {
+    border-color: #4CAF50; /* Color for arrows and dots */
+}
+
+.item-updater-container .carousel .control-dots .dot.selected,
+.item-updater-container .carousel .control-arrow:hover {
+    background-color: #4CAF50; /* Active/hover color for arrows and dots */
+}

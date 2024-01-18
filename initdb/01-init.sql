@@ -1,72 +1,79 @@
-const express = require('express');
-const pool = require('../database'); // Adjust the path if necessary
-const router = express.Router();
+-- Initialize Database
 
-// Get all images
-router.get('/', (req, res) => {
-    pool.query('SELECT * FROM images', (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        res.json(results);
-    });
-});
+-- Creating the vendors table
+CREATE TABLE vendors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    on_time_delivery_rate DECIMAL(5,2),
+    order_accuracy_rate DECIMAL(5,2),
+    quality_rating DECIMAL(5,2)
+);
 
-// Get a single image
-router.get('/:id', (req, res) => {
-    const id = req.params.id;
-    pool.query('SELECT * FROM images WHERE image_id = ?', [id], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        if (results.length > 0) {
-            res.json(results[0]);
-        } else {
-            res.status(404).json({ message: 'Image not found' });
-        }
-    });
-});
+-- Creating the purchase_orders table
+CREATE TABLE purchase_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vendor_id INT,
+    order_date DATE,
+    expected_delivery_date DATE,
+    actual_delivery_date DATE,
+    order_status ENUM('pending', 'completed', 'delayed'),
+    FOREIGN KEY (vendor_id) REFERENCES vendors(id)
+);
 
-// Create a new image
-router.post('/', (req, res) => {
-    const { item_id, image_url, image_description } = req.body;
-    pool.query('INSERT INTO images (item_id, image_url, image_description) VALUES (?, ?, ?)', [item_id, image_url, image_description], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        res.status(201).json({ message: 'Image created', image_id: results.insertId });
-    });
-});
+-- Creating the items table
+CREATE TABLE items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    upc INT,
+    name VARCHAR(255) NOT NULL,
+    current_location TEXT,
+    description TEXT,
+    notes TEXT,
+    purchase_price DECIMAL(10,2) CHECK (purchase_price >= 0),
+    vender_inventory_label TEXT,
+    vendor_id INT,
+    purchase_order_id INT,
+    observed_condition VARCHAR(255),
+    progress ENUM('not received', 'received', 'tested', 'listed', 'sold', 'junk') NOT NULL DEFAULT 'not received',
+    isLot TINYINT DEFAULT 0,
+    quantity INT DEFAULT 1 CHECK (quantity >= 0),
+    FOREIGN KEY (vendor_id) REFERENCES vendors(id),
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(id)
+);
 
-// Update an image
-router.put('/:id', (req, res) => {
-    const id = req.params.id;
-    const { item_id, image_url, image_description } = req.body;
-    pool.query('UPDATE images SET item_id = ?, image_url = ?, image_description = ? WHERE image_id = ?', [item_id, image_url, image_description, id], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        if (results.affectedRows > 0) {
-            res.json({ message: 'Image updated' });
-        } else {
-            res.status(404).json({ message: 'Image not found' });
-        }
-    });
-});
+-- Creating the images table
+CREATE TABLE images (
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT,
+    image_url VARCHAR(255) NOT NULL,
+    image_description TEXT,
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
 
-// Delete an image
-router.delete('/:id', (req, res) => {
-    const id = req.params.id;
-    pool.query('DELETE FROM images WHERE image_id = ?', [id], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error });
-        }
-        if (results.affectedRows > 0) {
-            res.json({ message: 'Image deleted' });
-        } else {
-            res.status(404).json({ message: 'Image not found' });
-        }
-    });
-});
 
-module.exports = router;
+-- Creating the sales table
+CREATE TABLE sales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT,
+    sale_price DECIMAL(10,2),
+    sale_date DATE,
+    sale_source VARCHAR(255),
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);
+
+-- Creating the item_status_history table
+CREATE TABLE item_status_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT,
+    previous_status ENUM('not received', 'received', 'tested', 'listed', 'sold', 'junk'),
+    new_status ENUM('not received', 'received', 'tested', 'listed', 'sold', 'junk'),
+    previous_quantity INT,
+    new_quantity INT,
+    previous_location TEXT,
+    new_location TEXT,
+    previous_description TEXT,
+    new_description TEXT,
+    change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);

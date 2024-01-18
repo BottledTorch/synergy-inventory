@@ -1,31 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import QRCode from 'qrcode.react';
+import { saveAs } from 'file-saver';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import './ItemUpdater.css';
 
-const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS; // Replace with your actual server address
-const image_app_address = process.env.REACT_APP_UPLOAD_PICTURES_SERVER_ADDRESS; // Replace with your actual server address
+const server_address = process.env.REACT_APP_EXPRESS_SERVER_ADDRESS || '10.1.0.16:3000'; // Replace with your actual server address
+const image_app_address = process.env.REACT_APP_UPLOAD_PICTURES_SERVER_ADDRESS || '10.1.0.16:3005'; // Replace with your actual server address
 
 const ItemListingHelper = () => {
     const [searchId, setSearchId] = useState('');
     const [item, setItem] = useState(null);
+    const [images, setImages] = useState([]);
     const [message, setMessage] = useState('');
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
 
     const handleSearch = () => {
         axios.get(`http://${server_address}/items/${searchId}`)
             .then(response => {
                 setItem(response.data);
+                fetchImages(response.data.id);
             })
             .catch(error => {
                 setMessage("Error fetching item: " + error.message);
             });
     };
 
-    const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+    const handleDeleteImage = async (imageId) => {
+        try {
+            await axios.delete(`http://${server_address}/images/${imageId}`);
+            fetchImages(item.id); // Refetch images to update the list
+            setMessage("Image deleted successfully.");
+        } catch (error) {
+            setMessage("Error deleting image: " + error.message);
+        }
     };
 
+    const handleDownloadCurrentImage = () => {
+        if (images.length > 0 && currentImageIndex < images.length) {
+            const currentImageUrl = images[currentImageIndex].image_url;
+            saveAs(currentImageUrl, `image-${images[currentImageIndex].image_id}.jpg`);
+        }
+    };    
+    
+    const handleDownloadAllImages = async () => {
+        try {
+            const response = await axios.get(`http://${server_address}/images/download/${item.id}`, {
+                responseType: 'blob', // Important to handle binary data
+            });
+            saveAs(response.data, `images-${item.id}.zip`);
+        } catch (error) {
+            console.error("Error downloading images: " + error.message);
+        }
+    };
+
+    const fetchImages = (itemId) => {
+        axios.get(`http://${server_address}/images/byItem/${itemId}`)
+            .then(response => {
+                setImages(response.data);
+            })
+            .catch(error => {
+                console.log("Error fetching images: " + error.message);
+            });
+    };    
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (item) {
+                fetchImages(item.id);
+            }
+        }, 5000); // Polling every 5 seconds
+
+        return () => clearInterval(interval);
+    }, [item]);
 
     const updateListing = () => {
         axios.put(`http://${server_address}/items/${item.id}`, item)
@@ -65,6 +114,23 @@ const ItemListingHelper = () => {
             {item && (
                 <>
                     <h2 className="item-updater-header">Item Details</h2>
+                    {images.length > 0 && (
+                        <>
+                            <Carousel selectedItem={currentImageIndex} onChange={(index) => setCurrentImageIndex(index)}>
+                                {images.map((image, index) => (
+                                    <div key={index}>
+                                        <button onClick={() => handleDeleteImage(image.image_id)}>Delete Image</button>
+                                        <button onClick={handleDownloadCurrentImage}>Download Current Image</button>
+
+                                        <img src={image.image_url} alt={`Image ${index}`} />
+                                    </div>
+                                ))}
+                            </Carousel>
+                            <button className="item-updater-button" onClick={handleDownloadAllImages}>
+                                Download All Images
+                            </button>
+                        </>
+                    )}
                     <table className="item-updater-table">
                         <tbody>
                             {Object.keys(item).map(key => (
@@ -99,10 +165,19 @@ const ItemListingHelper = () => {
                     >
                         Update Listing
                     </button>
+                    <h3>Add Photos</h3>
+                    <a 
+                        href={`http://${image_app_address}/item-id/${item.id}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                    >
+                        Upload
+                    </a>
 
                     <div>
                         <QRCode value={`http://${image_app_address}/item-id/${item.id}`} />
                     </div>
+                    
                 </>
             )}
 

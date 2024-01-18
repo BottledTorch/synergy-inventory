@@ -3,20 +3,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const Minio = require('minio');
 const fs = require('fs')
+const minioClient = require('./minioClient'); // Adjust the path to your minioClient.js file
 
 const MINIO_HOST = process.env.MINIO_HOST
 const MINIO_PORT = process.env.MINIO_PORT
-const MINIO_ROOT_USER = process.env.MINIO_ROOT_USER
-const MINIO_ROOT_USER_PASSWORD = fs.readFileSync(process.env.MINIO_ROOT_PASSWORD_FILE, 'utf8').trim()
-
-// MinIO client configuration
-const minioClient = new Minio.Client({
-    endPoint: MINIO_HOST, // Set to 'minio' if using Docker's internal network
-    port: parseInt(MINIO_PORT, 10),
-    useSSL: false, // Set to true if SSL is configured
-    accessKey: MINIO_ROOT_USER,
-    secretKey: MINIO_ROOT_USER_PASSWORD
-});
 
 
 const server = express();
@@ -38,13 +28,14 @@ server.use('/sales', salesRoutes);
 server.use('/item_status_history', itemStatusHistoryRoutes);
 server.use('/images', imageRoutes)
 
+// GET route to generate presigned URLs based on imageIds and itemId
 server.get('/generate-presigned-urls', async (req, res) => {
-    const { itemID, fileCount } = req.query;
+    const { imageIds, itemId } = req.query; // Expecting an array of imageIds and itemId
     try {
         const presignedUrls = [];
         const accessUrls = [];
-        for (let i = 0; i < fileCount; i++) {
-            const objectName = `ITM-${itemID}-${i}`;
+        for (const imageId of imageIds) {
+            const objectName = `ITM-${itemId}_IMG-${imageId}`;
             const presignedUrl = await minioClient.presignedPutObject('itemimages', objectName, 60 * 60); // 1 hour expiry
             presignedUrls.push(presignedUrl);
 
