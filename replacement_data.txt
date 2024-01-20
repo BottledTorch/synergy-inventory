@@ -1,0 +1,10 @@
+52
+---
+<input
+    className="item-updater-input"
+    type="text"
+    placeholder="Enter Item ID"
+    value={searchId}
+    onChange={e => setSearchId(e.target.value)}
+    onKeyDown={e => { if (e.key === 'Enter') handleSearch() }}
+/>

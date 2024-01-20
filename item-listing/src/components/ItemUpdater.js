@@ -18,6 +18,11 @@ const ItemListingHelper = () => {
 
 
     const handleSearch = () => {
+        if (!searchId.trim()) {
+            setMessage("Please enter a search ID.");
+            return;
+        }
+
         axios.get(`http://${server_address}/items/${searchId}`)
             .then(response => {
                 setItem(response.data);
