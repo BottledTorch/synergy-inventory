@@ -35,7 +35,7 @@ server.get('/generate-presigned-urls', async (req, res) => {
         const presignedUrls = [];
         const accessUrls = [];
         for (const imageId of imageIds) {
-            const objectName = `ITM-${itemId}_IMG-${imageId}`;
+            const objectName = `ITM-${itemId}_IMG-${imageId}.jpg`;
             const presignedUrl = await minioClient.presignedPutObject('itemimages', objectName, 60 * 60); // 1 hour expiry
             presignedUrls.push(presignedUrl);
 

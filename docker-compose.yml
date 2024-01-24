@@ -10,6 +10,8 @@ services:
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
     volumes:
       - ./database/mysql:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
@@ -123,7 +125,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${PWD}/database/mysql
+      device: ./database/mysql
 
 secrets:
   mysql_root_password:

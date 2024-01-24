@@ -136,6 +136,11 @@ function App() {
     
         for (const item of fileData) {
             const itemName = itemNameColumns.map(col => item[col]).join(' ');
+
+            // Skip the item if itemName is empty
+            if (!itemName) {
+                continue;
+            }
             
             const itemPayload = {
                 name: itemName,

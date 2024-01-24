@@ -29,6 +29,9 @@ router.get('/:id', (req, res) => {
 // Create a new item
 router.post('/', (req, res) => {
     const { upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity } = req.body;
+    if (name.length == 0) {
+        res.status(500).json({error: "name must have content"})
+    }
     pool.query('INSERT INTO items (upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [upc, name, current_location, description, notes, purchase_price, vender_inventory_label, vendor_id, purchase_order_id, observed_condition, progress, isLot, quantity], (error, results) => {
         if (error) {
             return res.status(500).json({ error });
